@@ -1,0 +1,7 @@
+web: gunicorn home.wsgi:application
+
+
+
+
+
+
