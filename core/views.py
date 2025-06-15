@@ -8,6 +8,13 @@ from .models import Product, Cart, CartItem
 import stripe
 from django.conf import settings
 from django.http import HttpResponse
+
+from django.contrib.auth.models import User
+
+def create_admin(request):
+    User.objects.create_superuser('admin', 'admin@example.com', 'adminpass')
+    return HttpResponse("Admin created.")
+
 #from django.core.management import call_command
 
 #def load_fixtures(request):
