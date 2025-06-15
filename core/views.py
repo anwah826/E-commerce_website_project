@@ -21,15 +21,15 @@ def create_admin(request):
     return HttpResponse("Invalid request method.", status=405)
 
 
-#from django.core.management import call_command
+from django.core.management import call_command
 
-#def load_fixtures(request):
-   # try:
-     #   call_command('loaddata', 'categories.json')
-      #  call_command('loaddata', 'products.json')
-     #   return HttpResponse("Fixtures loaded successfully.")
-   # except Exception as e:
-    #    return HttpResponse(f"Error loading fixtures: {e}")
+def load_fixtures(request):
+   try:
+       call_command('loaddata', 'categories.json')
+       call_command('loaddata', 'products.json')
+       return HttpResponse("Fixtures loaded successfully.")
+   except Exception as e:
+       return HttpResponse(f"Error loading fixtures: {e}")
 
 
 def get_cart_session_key(request):
