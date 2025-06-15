@@ -19,7 +19,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-9r$n*##)-4*ec6t)k+)kn_ng%vu)rfjsc@a+^459*9qwu^k*bw'
 DEBUG = True
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,.onrender.com').split(',')
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'e-commerce-website-project-xqdz.onrender.com']
+
 
 # Application definition
 INSTALLED_APPS = [
