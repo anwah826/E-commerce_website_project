@@ -16,15 +16,14 @@ from django.contrib.auth.models import User
 from django.core.management import call_command
 
 
+
+
 def create_admin(request):
-    user, created = User.objects.get_or_create(username='admin')
-    if created:
-        user.email = 'admin@example.com'
-        user.set_password('adminpass')
-    user.is_staff = True
-    user.is_superuser = True
-    user.save()
-    return HttpResponse("Admin created or updated.")
+    if User.objects.filter(username='admin').exists():
+        return HttpResponse("Admin user already exists.")
+    User.objects.create_superuser('admin', 'admin@example.com', 'adminpass')
+    return HttpResponse("Admin user created.")
+
 
 
 
