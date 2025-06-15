@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from .views import remove_from_cart, update_cart_quantity
 from django.contrib.auth import views as auth_views
-from .views import create_admin
+from .views import load_fixtures, create_admin
 #urlpatterns = [
    # path('', views.product_list, name='product_list'),
     
