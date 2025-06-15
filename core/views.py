@@ -11,14 +11,19 @@ from django.http import HttpResponse
 
 from django.contrib.auth.models import User
 
+from django.http import HttpResponse
+from django.contrib.auth.models import User
 
 def create_admin(request):
-    if request.method == "GET":
-        if not User.objects.filter(username="admin").exists():
-            User.objects.create_superuser('admin', 'admin@example.com', 'adminpass')
-            return HttpResponse("Admin created.")
-        return HttpResponse("Admin already exists.")
-    return HttpResponse("Invalid request method.", status=405)
+    user, created = User.objects.get_or_create(username='admin')
+    if created:
+        user.email = 'admin@example.com'
+        user.set_password('adminpass')
+    user.is_staff = True
+    user.is_superuser = True
+    user.save()
+    return HttpResponse("Admin created or updated.")
+
 
 
 from django.core.management import call_command
