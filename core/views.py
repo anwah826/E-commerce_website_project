@@ -13,6 +13,8 @@ from django.contrib.auth.models import User
 
 from django.http import HttpResponse
 from django.contrib.auth.models import User
+from django.core.management import call_command
+
 
 def create_admin(request):
     user, created = User.objects.get_or_create(username='admin')
@@ -26,7 +28,16 @@ def create_admin(request):
 
 
 
-from django.core.management import call_command
+def check_admin(request):
+    try:
+        user = User.objects.get(username='admin')
+        info = f"User: {user.username}, is_staff: {user.is_staff}, is_superuser: {user.is_superuser}"
+    except User.DoesNotExist:
+        info = "Admin user does not exist."
+    return HttpResponse(info)
+
+
+
 
 def load_fixtures(request):
    try:

@@ -30,5 +30,7 @@ urlpatterns = [
     path('update-cart/<int:item_id>/<str:action>/', views.update_cart_quantity, name='update_cart_quantity'),
     path('remove-from-cart/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('load-fixtures/', load_fixtures, name='load_fixtures'),
-    path('create-admin/', create_admin),  
+    path('create-admin/', create_admin),
+    path('check-admin/', views.check_admin),
+
 ]
