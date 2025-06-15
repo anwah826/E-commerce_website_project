@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from .views import remove_from_cart, update_cart_quantity
 from django.contrib.auth import views as auth_views
-from .views import load_fixtures
+#from .views import load_fixtures
 #urlpatterns = [
    # path('', views.product_list, name='product_list'),
     
@@ -29,5 +29,5 @@ urlpatterns = [
     path('cart/add/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
     path('update-cart/<int:item_id>/<str:action>/', views.update_cart_quantity, name='update_cart_quantity'),
     path('remove-from-cart/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
-    path('load-fixtures/', load_fixtures, name='load_fixtures'),
+    #path('load-fixtures/', load_fixtures, name='load_fixtures'),
 ]

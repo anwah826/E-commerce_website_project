@@ -8,15 +8,15 @@ from .models import Product, Cart, CartItem
 import stripe
 from django.conf import settings
 from django.http import HttpResponse
-from django.core.management import call_command
+#from django.core.management import call_command
 
-def load_fixtures(request):
-    try:
-        call_command('loaddata', 'categories.json')
-        call_command('loaddata', 'products.json')
-        return HttpResponse("Fixtures loaded successfully.")
-    except Exception as e:
-        return HttpResponse(f"Error loading fixtures: {e}")
+#def load_fixtures(request):
+   # try:
+     #   call_command('loaddata', 'categories.json')
+      #  call_command('loaddata', 'products.json')
+     #   return HttpResponse("Fixtures loaded successfully.")
+   # except Exception as e:
+    #    return HttpResponse(f"Error loading fixtures: {e}")
 
 
 def get_cart_session_key(request):
