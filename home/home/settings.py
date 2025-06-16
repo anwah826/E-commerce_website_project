@@ -71,27 +71,22 @@ WSGI_APPLICATION = 'home.home.wsgi.application'
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Default SQLite URL for local dev
-default_sqlite_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
 
-# Get DATABASE_URL from environment or fallback to default
-database_url = os.getenv('DATABASE_URL', default_sqlite_url)
-
-# Sanity check: if DATABASE_URL is empty or malformed, fallback to SQLite
-if not database_url or database_url.strip() in ['', '://']:
-    database_url = default_sqlite_url
-
-DATABASES = {
-    'default': dj_database_url.config(
-        default=database_url,
-        conn_max_age=600,
-        ssl_require=bool(os.getenv('DATABASE_URL'))
-    )
-}
-
-
-
-
+if os.getenv("DATABASE_URL"):
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=os.getenv("DATABASE_URL"),
+            conn_max_age=600,
+            ssl_require=True
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [
