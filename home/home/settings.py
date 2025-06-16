@@ -64,11 +64,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'home.home.wsgi.application'
 
+import os
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+        default=f"sqlite:///{str(BASE_DIR / 'db.sqlite3').replace(os.sep, '/')}"
     )
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
