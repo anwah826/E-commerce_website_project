@@ -14,6 +14,8 @@ from pathlib import Path
 import os
 import dj_database_url
 import stripe
+from pathlib import Path
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -64,13 +66,21 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'home.home.wsgi.application'
 
-import os
+
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Compose default SQLite URL for fallback
+default_sqlite_url = f"sqlite:///{str(BASE_DIR / 'db.sqlite3').replace(os.sep, '/')}"
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=f"sqlite:///{str(BASE_DIR / 'db.sqlite3').replace(os.sep, '/')}"
+        default=default_sqlite_url,
+        conn_max_age=600,  # persistent connections for performance, adjust as needed
+        ssl_require=bool(os.getenv('DATABASE_URL'))  # require SSL only if using external DB (Render)
     )
 }
+
 
 
 AUTH_PASSWORD_VALIDATORS = [
