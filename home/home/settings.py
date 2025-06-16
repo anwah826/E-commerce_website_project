@@ -68,18 +68,29 @@ WSGI_APPLICATION = 'home.home.wsgi.application'
 
 
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# Compose default SQLite URL for fallback
-default_sqlite_url = f"sqlite:///{str(BASE_DIR / 'db.sqlite3').replace(os.sep, '/')}"
+# Default SQLite URL for local dev
+default_sqlite_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+
+# Get DATABASE_URL from environment or fallback to default
+database_url = os.getenv('DATABASE_URL', default_sqlite_url)
+
+# Sanity check: if DATABASE_URL is empty or malformed, fallback to SQLite
+if not database_url or database_url.strip() in ['', '://']:
+    database_url = default_sqlite_url
 
 DATABASES = {
     'default': dj_database_url.config(
-        default=default_sqlite_url,
-        conn_max_age=600,  # persistent connections for performance, adjust as needed
-        ssl_require=bool(os.getenv('DATABASE_URL'))  # require SSL only if using external DB (Render)
+        default=database_url,
+        conn_max_age=600,
+        ssl_require=bool(os.getenv('DATABASE_URL'))
     )
 }
+
+
+
 
 
 
