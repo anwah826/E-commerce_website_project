@@ -171,6 +171,7 @@ def update_cart_quantity(request, item_id, action):
         else:
             item.delete()
     return redirect('view_cart')
+
 def checkout(request):
     cart = request.session.get('cart', {})
     line_items = []
@@ -183,7 +184,7 @@ def checkout(request):
                 'product_data': {
                     'name': product.name,
                 },
-                'unit_amount': int(product.price * 100),  
+                'unit_amount': int(product.price * 100),
             },
             'quantity': quantity,
         })
@@ -193,17 +194,19 @@ def checkout(request):
             payment_method_types=['card'],
             line_items=line_items,
             mode='payment',
-            success_url=request.build_absolute_uri('/success/'),
-            cancel_url=request.build_absolute_uri('/cart/'),
+            success_url='https://ecommerce-website-project-xqdz.onrender.com/success/',
+            cancel_url='https://ecommerce-website-project-xqdz.onrender.com/cart/',
         )
         return redirect(checkout_session.url)
     except Exception as e:
         return render(request, 'core/product/error.html', {'error': str(e)})
 
+
 def payment_success(request):
     # Clear the cart
     request.session['cart'] = {}
     return render(request, 'core/product/success.html')
+
 
 
 
