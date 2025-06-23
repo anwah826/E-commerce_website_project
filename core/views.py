@@ -194,8 +194,8 @@ def checkout(request):
             payment_method_types=['card'],
             line_items=line_items,
             mode='payment',
-            success_url='https://ecommerce-website-project-xqdz.onrender.com/success/',
-            cancel_url='https://ecommerce-website-project-xqdz.onrender.com/cart/',
+            success_url='https://e-commerce-website-project-xqdz.onrender.com/success/',
+            cancel_url='https://e-commerce-website-project-xqdz.onrender.com/cart/',
         )
         return redirect(checkout_session.url)
     except Exception as e:
