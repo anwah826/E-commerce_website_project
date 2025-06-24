@@ -8,7 +8,37 @@ from django.http import HttpResponse
 from django.core.management import call_command
 from django.contrib.auth.models import User
 import stripe
+from django.core.mail import send_mail
+from django.conf import settings
+from django.contrib import messages
+from django.urls import reverse
 
+def support_view(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        full_message = f"From: {email}\n\n{message}"
+
+        send_mail(
+            subject,
+            full_message,
+            settings.DEFAULT_FROM_EMAIL,
+            [settings.SUPPORT_EMAIL],
+        )
+
+        return render(request, 'core/product/support.html', {'success': True})
+
+    return render(request, 'core/product/support.html')
+
+@login_required
+def user_dashboard(request):
+    cart_items = CartItem.objects.filter(session_key=get_cart_session_key(request))
+    return render(request, 'core/product/dashboard.html', {
+        'user': request.user,
+        'cart_items': cart_items,
+    })
 
 def create_admin(request):
     if User.objects.filter(username='admin').exists():
@@ -89,6 +119,8 @@ def get_user_cart(user):
     return cart
 
 
+
+
 @login_required
 def add_to_cart(request, product_id):
     session_key = get_cart_session_key(request)
@@ -102,31 +134,24 @@ def add_to_cart(request, product_id):
         cart_item.quantity += 1
         cart_item.save()
 
-    return redirect('view_cart')
+    messages.success(request, f"✅ {product.name} was added to your cart.")
+    return redirect(reverse('product_detail', args=[product.id, product.slug]))
+
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
-
 @login_required
 def cart_detail(request):
-    cart = request.session.get('cart', {})
-    items = []
-    total = 0
-
-    for product_id, quantity in cart.items():
-        product = Product.objects.get(id=product_id)
-        item_total = product.price * quantity
-        total += item_total
-        items.append({
-            'product': product,
-            'quantity': quantity,
-            'total': item_total
-        })
+    session_key = get_cart_session_key(request)  # get user's session key
+    cart_items = CartItem.objects.filter(session_key=session_key)
+    cart_total = sum(item.quantity * item.product.price for item in cart_items)
+    stripe_amount_cents = int(cart_total * 100)
 
     context = {
-        'cart_items': items,
-        'cart_total': total,
-        'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY
+        'cart_items': cart_items,
+        'cart_total': cart_total,
+        'stripe_publishable_key': settings.STRIPE_PUBLISHABLE_KEY,
+        'stripe_amount_cents': stripe_amount_cents,
     }
     return render(request, 'core/product/cart.html', context)
 
@@ -144,7 +169,7 @@ def view_cart(request):
 def remove_from_cart(request, item_id):
     item = get_object_or_404(CartItem, id=item_id)
     item.delete()
-    return redirect('view_cart')
+    return redirect('cart_detail')
 
 
 def update_cart_quantity(request, item_id, action):
@@ -158,7 +183,7 @@ def update_cart_quantity(request, item_id, action):
             item.save()
         else:
             item.delete()
-    return redirect('view_cart')
+    return redirect('cart_detail')  
 
 
 def checkout(request):

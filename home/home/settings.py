@@ -120,3 +120,6 @@ import os
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY") or "sk_test_your_test_key_here"
 STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY") or "pk_test_51NRbVnK9vY3DPZ0Q9eKmYHdXZv2xL5WlKtD1UUKoBe3ZLz7SN6l9TWkUCFmAdG4a6oIB3WQoqUoTQmLrEqpVexjV00l1oQDR1o"
 
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # for testing
+DEFAULT_FROM_EMAIL = 'webmaster@example.com'
+SUPPORT_EMAIL = 'support@example.com'
