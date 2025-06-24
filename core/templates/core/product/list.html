@@ -7,10 +7,14 @@
 {% block content %}
 <form method="get" action="{% url 'product_list' %}" class="mb-4">
   <input type="text" name="q" placeholder="Search products..." value="{{ query|default:'' }}" class="form-control" />
-  <button type="submit" class="btn btn-primary mt-2">Search</button>
+  <button type="submit" class="btn btn-primary mt-2">Search 🔍</button>
 </form>
 
-<button><a href="http://127.0.0.1:8000/cart/">Cart</a></button>
+<!-- ✅ Updated cart button -->
+<div class="text-end mb-3">
+  <a href="{% url 'cart_detail' %}" class="btn btn-outline-primary">🛒 View Cart</a>
+</div>
+
 <div class="container">
     <div class="row my-4">
         <!-- Sidebar: Categories -->
@@ -54,6 +58,7 @@
         </div>
     </div>
 </div>
+
 <div class="pagination mt-4">
   <nav>
     <ul class="pagination justify-content-center">

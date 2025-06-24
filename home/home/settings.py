@@ -39,6 +39,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -101,8 +102,9 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -113,6 +115,8 @@ LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/accounts/login/'
 
-# Stripe
-STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
-STRIPE_PUBLISHABLE_KEY = 'pk_test_51NRbVnK9vY3DPZ0Q9eKmYHdXZv2xL5WlKtD1UUKoBe3ZLz7SN6l9TWkUCFmAdG4a6oIB3WQoqUoTQmLrEqpVexjV00l1oQDR1o'
+import os
+
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY") or "sk_test_your_test_key_here"
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY") or "pk_test_51NRbVnK9vY3DPZ0Q9eKmYHdXZv2xL5WlKtD1UUKoBe3ZLz7SN6l9TWkUCFmAdG4a6oIB3WQoqUoTQmLrEqpVexjV00l1oQDR1o"
+

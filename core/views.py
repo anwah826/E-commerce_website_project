@@ -1,21 +1,13 @@
-from django.shortcuts import render, get_object_or_404
-from .models import Category, Product
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Category, Product, Cart, CartItem
 from django.core.paginator import Paginator
 from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Product, Cart, CartItem
-import stripe
 from django.conf import settings
 from django.http import HttpResponse
-
-from django.contrib.auth.models import User
-
-from django.http import HttpResponse
-from django.contrib.auth.models import User
 from django.core.management import call_command
-
-
+from django.contrib.auth.models import User
+import stripe
 
 
 def create_admin(request):
@@ -23,8 +15,6 @@ def create_admin(request):
         return HttpResponse("Admin user already exists.")
     User.objects.create_superuser('admin', 'admin@example.com', 'adminpass')
     return HttpResponse("Admin user created.")
-
-
 
 
 def check_admin(request):
@@ -36,15 +26,13 @@ def check_admin(request):
     return HttpResponse(info)
 
 
-
-
 def load_fixtures(request):
-   try:
-       call_command('loaddata', 'categories.json')
-       call_command('loaddata', 'products.json')
-       return HttpResponse("Fixtures loaded successfully.")
-   except Exception as e:
-       return HttpResponse(f"Error loading fixtures: {e}")
+    try:
+        call_command('loaddata', 'categories.json')
+        call_command('loaddata', 'products.json')
+        return HttpResponse("Fixtures loaded successfully.")
+    except Exception as e:
+        return HttpResponse(f"Error loading fixtures: {e}")
 
 
 def get_cart_session_key(request):
@@ -59,7 +47,6 @@ def product_list(request, category_slug=None):
     categories = Category.objects.all()
     products = Product.objects.filter(available=True)
 
-  
     query = request.GET.get('q')
     if query:
         products = products.filter(name__icontains=query)
@@ -68,7 +55,7 @@ def product_list(request, category_slug=None):
         category = get_object_or_404(Category, slug=category_slug)
         products = products.filter(category=category)
 
-    paginator = Paginator(products, 15)  
+    paginator = Paginator(products, 15)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
@@ -76,33 +63,31 @@ def product_list(request, category_slug=None):
         'category': category,
         'categories': categories,
         'products': page_obj,
-        'query': query,  
+        'query': query,
     })
 
 
-
 @login_required
-def product_detail(request, id ,slug):
+def product_detail(request, id, slug):
     product = get_object_or_404(Product, id=id, slug=slug, available=True)
     return render(request, 'core/product/detail.html', {'product': product})
 
 
-
-
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)  
+        form = UserCreationForm(request.POST)
         if form.is_valid():
-            form.save()  
-            return redirect('login')  
+            form.save()
+            return redirect('login')
     else:
-        form = UserCreationForm() 
+        form = UserCreationForm()
     return render(request, 'core/product/register.html', {'form': form})
 
 
 def get_user_cart(user):
     cart, created = Cart.objects.get_or_create(user=user)
     return cart
+
 
 @login_required
 def add_to_cart(request, product_id):
@@ -120,8 +105,8 @@ def add_to_cart(request, product_id):
     return redirect('view_cart')
 
 
-
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
 @login_required
 def cart_detail(request):
     cart = request.session.get('cart', {})
@@ -145,6 +130,7 @@ def cart_detail(request):
     }
     return render(request, 'core/product/cart.html', context)
 
+
 def view_cart(request):
     session_key = get_cart_session_key(request)
     cart_items = CartItem.objects.filter(session_key=session_key)
@@ -154,10 +140,12 @@ def view_cart(request):
         'cart_total': cart_total,
     })
 
+
 def remove_from_cart(request, item_id):
     item = get_object_or_404(CartItem, id=item_id)
     item.delete()
     return redirect('view_cart')
+
 
 def update_cart_quantity(request, item_id, action):
     item = get_object_or_404(CartItem, id=item_id)
@@ -171,6 +159,7 @@ def update_cart_quantity(request, item_id, action):
         else:
             item.delete()
     return redirect('view_cart')
+
 
 def checkout(request):
     cart = request.session.get('cart', {})
@@ -189,13 +178,16 @@ def checkout(request):
             'quantity': quantity,
         })
 
+    # ✅ Production domain (Render)
+    YOUR_DOMAIN = 'https://e-commerce-website-project-xqdz.onrender.com'
+
     try:
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=line_items,
             mode='payment',
-            success_url='https://e-commerce-website-project-xqdz.onrender.com/success/',
-            cancel_url='https://e-commerce-website-project-xqdz.onrender.com/cart/',
+            success_url=YOUR_DOMAIN + '/success/',
+            cancel_url=YOUR_DOMAIN + '/cart/',
         )
         return redirect(checkout_session.url)
     except Exception as e:
@@ -206,9 +198,5 @@ def payment_success(request):
     # Clear the cart
     request.session['cart'] = {}
     return render(request, 'core/product/success.html')
-
-
-
-
 
 

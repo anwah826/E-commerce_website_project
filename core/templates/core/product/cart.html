@@ -4,73 +4,73 @@
 
 {% block content %}
 {% if cart_items %}
-  <!-- your cart table here -->
 
+<div class="text-end mb-3">
+  <a href="{% url 'product_list' %}" class="btn btn-outline-secondary">All Products</a>
+  <a href="{% url 'login' %}" class="btn btn-outline-secondary">Login</a>
+</div>
+
+<div class="container my-5">
+  <h2>Your Cart</h2>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in cart_items %}
+        {% if item.id %}
+          <tr>
+            <td>{{ item.product.name }}</td>
+            <td>
+              <a href="{% url 'update_cart_quantity' item.id 'decrease' %}" class="btn btn-sm btn-outline-secondary">-</a>
+              {{ item.quantity }}
+              <a href="{% url 'update_cart_quantity' item.id 'increase' %}" class="btn btn-sm btn-outline-secondary">+</a>
+            </td>
+            <td>${{ item.product.price }}</td>
+            <td>${{ item.total_price }}</td>
+            <td>
+              <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-sm btn-danger">Remove</a>
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="5" class="text-center text-danger">Invalid cart item (missing ID)</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+      <tr>
+        <td colspan="3" class="text-end"><strong>Total:</strong></td>
+        <td colspan="2"><strong>${{ cart_total }}</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Stripe Checkout -->
   <form action="{% url 'checkout' %}" method="post">
     {% csrf_token %}
     <script
       src="https://checkout.stripe.com/checkout.js" class="stripe-button"
       data-key="{{ stripe_publishable_key }}"
-      data-amount="{{ cart_total|floatformat:2|floatformat:"0" }}00"
+      data-amount="{{ cart_total|floatformat:"0" }}00"
       data-name="Your Shop"
       data-description="Checkout"
       data-currency="usd">
     </script>
   </form>
-{% endif %}
-
-
-<button><a href="{% url 'product_list' %}">All products</a></button>
-<button><a href="{% url 'login' %}">Login</a></button>
-
-<div class="container my-5">
-    <h2>Your Cart</h2>
-
-    {% if cart_items %}
-
-    
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Total</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for item in cart_items %}
-                {% if item.id %}
-                <tr>
-                    <td>{{ item.product.name }}</td>
-                    <td>
-                        <a href="{% url 'update_cart_quantity' item.id 'decrease' %}" class="btn btn-sm btn-outline-secondary">-</a>
-                        {{ item.quantity }}
-                        <a href="{% url 'update_cart_quantity' item.id 'increase' %}" class="btn btn-sm btn-outline-secondary">+</a>
-                    </td>
-                    <td>${{ item.product.price }}</td>
-                    <td>${{ item.total_price }}</td>
-                    <td>
-                        <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-sm btn-danger">Remove</a>
-                    </td>
-                </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="5" class="text-center text-danger">Invalid cart item (missing ID)</td>
-                    </tr>
-                {% endif %}
-            {% endfor %}
-            <tr>
-                <td colspan="3" class="text-end"><strong>Total:</strong></td>
-                <td colspan="2"><strong>${{ cart_total }}</strong></td>
-            </tr>
-        </tbody>
-    </table>
-    {% else %}
-        <p>Your cart is currently empty.</p>
-    {% endif %}
 
 </div>
 
+{% else %}
+  <div class="container my-5">
+    <h3>Your cart is empty.</h3>
+    <a href="{% url 'product_list' %}" class="btn btn-primary mt-3">Go Shopping</a>
+  </div>
+{% endif %}
 {% endblock %}
