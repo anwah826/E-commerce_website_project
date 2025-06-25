@@ -52,20 +52,38 @@
     </tbody>
   </table>
 
-  <!-- Stripe Checkout -->
-  <form action="{% url 'checkout' %}" method="post">
-    {% csrf_token %}
-    <script
-      src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-      data-key="{{ stripe_publishable_key }}"
-      data-amount="{{ cart_total|floatformat:"0" }}00"
-      data-name="Your Shop"
-      data-description="Checkout"
-      data-currency="usd">
-    </script>
-  </form>
+  <!-- Paystack Payment Button -->
 
-</div>
+
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<script>
+  const paystackPublicKey = "{{ paystack_public_key }}";
+
+  const email = "{{ email|escapejs }}";
+
+  const amount = Number("{{ amount_in_cents|default_if_none:0|default:0 }}");
+
+
+  document.getElementById('paystack-button').addEventListener('click', function(e) {
+    e.preventDefault();
+
+    var handler = PaystackPop.setup({
+      key: paystackPublicKey,
+      email: email,
+      amount: amount,
+      currency: 'USD',
+      callback: function(response) {
+        window.location.href = "{% url 'verify_payment' %}?reference=" + response.reference;
+      },
+      onClose: function() {
+        alert('Payment window closed.');
+      }
+    });
+
+    handler.openIframe();
+  });
+</script>
+
 
 {% else %}
   <div class="container my-5">
