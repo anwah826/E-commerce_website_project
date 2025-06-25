@@ -12,7 +12,7 @@
       <ul class="list-group">
         {% for category in categories %}
           <li class="list-group-item {% if category == selected_category %}active{% endif %}">
-            <a href="{% url 'product_list' category.slug %}" class="{% if category == selected_category %}text-white{% endif %}">
+            <a href="{% url 'product_list_by_category' category.slug %}" class="{% if category == selected_category %}text-white{% endif %}">
               {{ category.name }}
             </a>
           </li>
